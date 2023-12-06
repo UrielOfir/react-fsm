@@ -1,0 +1,10 @@
+{
+  "name": "react-fsm",
+  "version": "1.0.0",
+  "description": "Finite State Machine (FSM) Library for React.js applications.",
+  "main": "index.js",
+  "repository": "git@github.com:UrielOfir/react-fsm.git",
+  "author": "Uriel Ofir <urielofir@gmail.com>",
+  "license": "MIT",
+  "private": false
+}
