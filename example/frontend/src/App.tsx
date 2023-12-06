@@ -1,36 +1,35 @@
 import React, { useEffect, useState } from "react";
-import FSM from "./fsm";
 import "./App.css";
 
 function App() {
-  const [fsm, setFsm] = useState<FSM | null>(null);
   const [state, setState] = useState("1");
+  const [levelsArray] = useState<string[]>(
+    Array.from({ length: 5 }, (_, i) => `${i + 1}`)
+  );
 
   useEffect(() => {
-    const myFsm = new FSM("1");
-    ["1", "2", "3", "4", "5"].forEach(level => {
-      myFsm.defineState(level);
-    });
-    ["1", "2", "3", "4", "5"].forEach(level1 => {
-      ["1", "2", "3", "4", "5"].forEach(level2 => {
-        if (level1 !== level2) {
-          myFsm.defineTransition(level1, level2, `goTo${level2}`);
-        }
-      });
-    });
-    setFsm(myFsm);
+    fetch("http://localhost:3001/state")
+      .then((response) => response.json())
+      .then((data) => setState(data.state))
+      .catch((error) => console.error("Error:", error));
   }, []);
 
   const handleClick = (level: string) => {
-    if (fsm) {
-      fsm.transition(`goTo${level}`);
-      setState(fsm.getState());
-    }
+    fetch("http://localhost:3001/transition", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ transition: `goTo${level}` }),
+    })
+      .then((response) => response.json())
+      .then((data) => setState(data.state))
+      .catch(error => console.error('Error:', error));;
   };
 
   return (
     <div className="building">
-      {["5", "4", "3", "2", "1"].map(level => (
+      {levelsArray.reverse().map((level) => (
         <div key={level} className="floor">
           <div className={`door ${state === level ? "open" : ""}`}>
             <button onClick={() => handleClick(level)}>
