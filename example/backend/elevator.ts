@@ -55,7 +55,7 @@ function moveToCallingFloor() {
 }
 
 function arriveAtCallingFloor() {
-  eventEmitter.emit("updateClient", `Arrived at calling floor ${callingFloor}`);
+  eventEmitter.emit("updateClient", JSON.stringify({ openDoorAt: currentFloor }));
   elevatorFSM.transition("moveToTargetFloor");
 }
 
