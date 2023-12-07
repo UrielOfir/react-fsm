@@ -130,4 +130,7 @@ dist
 .pnp.*
 
 # IDE  
-.vscode/*
+*/.vscode/*
+example/backend/.vscode/settings.json
+example/frontend/.vscode/settings.json
+.vscode/settings.json
