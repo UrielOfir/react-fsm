@@ -8,10 +8,11 @@ enum Direction {
   MovingDown = "movingDown",
 }
 
-type Request = {
+type ElevatorEvent = {
   callingFloor: number;
   targetFloor: number;
   direction: Direction;
+  handled: boolean;
 };
 
 elevatorFSM.defineState("idle");
@@ -33,53 +34,97 @@ elevatorFSM.defineTransition(
 elevatorFSM.defineTransition(Direction.MovingUp, "idle", "stop");
 elevatorFSM.defineTransition(Direction.MovingDown, "idle", "stop");
 
-let requests: Request[] = [];
+const requests: ElevatorEvent[] = [];
 let currentFloor = 0;
 
-function handleRequest(callingFloor: number, targetFloor: number) {
-  const request: Request = {
+function goToFloor(callingFloor: number, targetFloor: number) {
+  const request: ElevatorEvent = {
     callingFloor,
     targetFloor,
     direction:
-      callingFloor > targetFloor ? Direction.MovingUp : Direction.MovingDown,
+      callingFloor < targetFloor ? Direction.MovingUp : Direction.MovingDown,
+    handled: false,
   };
+
   requests.push(request);
 
   if (elevatorFSM.getState() === "idle") {
-    elevatorFSM.transition(request.direction);
+    if (callingFloor === currentFloor) {
+      request.handled = true;
+      openDoor(request);
+    }
+    const transition =
+      request.direction == Direction.MovingUp ? "moveUp" : "moveDown";
+    elevatorFSM.transition(transition);
     moveElevator();
   }
 }
 
-function moveElevator() {
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function moveElevator() {
   if (elevatorFSM.getState() === Direction.MovingUp) {
+    await delay(1000);
+    console.log(`Moving up to floor ${currentFloor + 1}`);
     currentFloor++;
   } else if (elevatorFSM.getState() === Direction.MovingDown) {
+    await delay(1000);
+    console.log(`Moving down to floor ${currentFloor - 1}`);
     currentFloor--;
   }
 
-  const index = requests.findIndex(
-    (request: Request) =>
-      request.callingFloor === currentFloor ||
-      request.targetFloor === currentFloor
-  );
+  // handle requests
+  requests.forEach((request) => {
+    const reqFromCurrentFloor: boolean =
+      request.direction === elevatorFSM.getState() &&
+      request.callingFloor === currentFloor;
+    const finishedReq: boolean =
+      request.targetFloor === currentFloor && request.handled;
 
-  if (index !== -1) {
-    const request = requests[index];
-    if (currentFloor === request.targetFloor) {
-      requests.splice(index, 1);
+    if (reqFromCurrentFloor) {
+      request.handled = true;
+      openDoor(request);
     }
-  }
 
+    if (finishedReq) {
+      requests.splice(requests.indexOf(request), 1);
+      openDoor(request);
+    }
+  });
+
+  // update elevator state
   if (requests.length === 0) {
     elevatorFSM.transition("stop");
-  } else if (currentFloor === requests[requests.length - 1].callingFloor) {
+    return;
+  }
+
+  function isRelevantRequest(request: ElevatorEvent): boolean {
+    return (
+      (elevatorFSM.getState() === Direction.MovingDown
+        ? request.callingFloor <= currentFloor
+        : request.callingFloor >= currentFloor) || request.handled
+    );
+  }
+  const noReqsForCurrentDirection: boolean = !requests.some((request) =>
+    isRelevantRequest(request)
+  );
+  if (noReqsForCurrentDirection) {
     elevatorFSM.transition("changeDirection");
   }
+
+  moveElevator();
 }
 
-handleRequest(3, 5);
-handleRequest(5, 1);
-handleRequest(1, 3);
+function openDoor(req?: ElevatorEvent) {
+  console.log(
+    `Opening door at floor ${currentFloor} for req ${JSON.stringify(req)}`
+  );
+  eventEmitter.emit(
+    "updateClient",
+    JSON.stringify({ openDoorAt: currentFloor })
+  );
+}
 
-export { elevatorFSM };
+export { elevatorFSM, goToFloor };
