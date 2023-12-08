@@ -20,7 +20,7 @@ const Building: React.FC<BuildingProps> = ({elevatorCall, openDoorAt}) => {
     { id: 5, name: "5" },
   ];
   useEffect(() => {
-    elevatorCall(2, 5);
+    // elevatorCall(2, 5);
   }, []);
 
   return (

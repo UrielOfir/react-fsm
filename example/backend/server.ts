@@ -4,7 +4,7 @@ import { EventEmitter } from "events";
 import WebSocket from 'ws';
 export const eventEmitter = new EventEmitter();
 
-import { elevatorFSM, goToFloor } from "./newElevator";
+import { elevatorFSM, goToFloor } from "./elevator";
 
 
 const app = express();

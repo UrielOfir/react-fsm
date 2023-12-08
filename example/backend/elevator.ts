@@ -1,86 +1,161 @@
 import FSM from "../../src/fsm";
 import { eventEmitter } from "./server";
 
-let currentFloor = 0;
-let targetFloor = 0;
-let callingFloor = 0;
+const elevatorFSM = new FSM("idle");
 
-let elevatorFSM = new FSM("idle");
-
-// Define states
-elevatorFSM.defineState("idle");
-elevatorFSM.defineState("moving");
-elevatorFSM.defineState("gotToFloor");
-
-// Define transitions
-elevatorFSM.defineTransition(
-  "idle",
-  "moving",
-  "moveToCallingFloor",
-  moveToCallingFloor
-);
-elevatorFSM.defineTransition(
-  "moving",
-  "gotToFloor",
-  "arriveAtCallingFloor",
-  arriveAtCallingFloor
-);
-elevatorFSM.defineTransition(
-  "gotToFloor",
-  "moving",
-  "moveToTargetFloor",
-  moveToTargetFloor
-);
-elevatorFSM.defineTransition(
-  "moving",
-  "gotToFloor",
-  "arriveAtTargetFloor",
-  arriveAtTargetFloor
-);
-elevatorFSM.defineTransition(
-  "gotToFloor",
-  "idle",
-  "returnToIdle",
-  returnToIdle
-);
-
-function moveToCallingFloor() {
-  eventEmitter.emit(
-    "updateClient",
-    `Moving from floor ${currentFloor} to calling floor ${callingFloor}`
-  );
-  currentFloor = callingFloor;
-  elevatorFSM.transition("arriveAtCallingFloor");
+enum Direction {
+  MovingUp = "movingUp",
+  MovingDown = "movingDown",
 }
 
-function arriveAtCallingFloor() {
-  eventEmitter.emit("updateClient", JSON.stringify({ openDoorAt: currentFloor }));
-  elevatorFSM.transition("moveToTargetFloor");
-}
-
-function moveToTargetFloor() {
-  eventEmitter.emit(
-    "updateClient",
-    `Moving from floor ${currentFloor} to target floor ${targetFloor}`
-  );
-  currentFloor = targetFloor;
-  elevatorFSM.transition("arriveAtTargetFloor");
-}
-
-function arriveAtTargetFloor() {
-  eventEmitter.emit("updateClient", JSON.stringify({ openDoorAt: currentFloor }));
-  elevatorFSM.transition("returnToIdle");
-}
-
-function returnToIdle() {
-  eventEmitter.emit("updateClient", `Returning to idle state`);
-}
-
-const goToFloor = (call, target) => {
-  callingFloor = call;
-  targetFloor = target;
-  elevatorFSM.transition("moveToCallingFloor");
+type ElevatorEvent = {
+  callingFloor: number;
+  targetFloor: number;
+  direction: Direction;
+  handled: boolean;
 };
 
+elevatorFSM.defineState("idle");
+elevatorFSM.defineState("movingUp");
+elevatorFSM.defineState("movingDown");
+
+elevatorFSM.defineTransition("idle", Direction.MovingUp, "moveUp");
+elevatorFSM.defineTransition("idle", Direction.MovingDown, "moveDown");
+elevatorFSM.defineTransition(
+  Direction.MovingUp,
+  Direction.MovingDown,
+  "changeDirection"
+);
+elevatorFSM.defineTransition(
+  Direction.MovingDown,
+  Direction.MovingUp,
+  "changeDirection"
+);
+elevatorFSM.defineTransition(Direction.MovingUp, "idle", "stop");
+elevatorFSM.defineTransition(Direction.MovingDown, "idle", "stop");
+
+const requests: ElevatorEvent[] = [];
+let currentFloor = 0;
+let isDoorOpen = false;
+
+function goToFloor(callingFloor: number, targetFloor: number) {
+  const request: ElevatorEvent = {
+    callingFloor,
+    targetFloor,
+    direction:
+      callingFloor < targetFloor ? Direction.MovingUp : Direction.MovingDown,
+    handled: false,
+  };
+
+  requests.push(request);
+
+  if (elevatorFSM.getState() === "idle") {
+    const transition =
+      request.callingFloor >= currentFloor ? "moveUp" : "moveDown";
+    elevatorFSM.transition(transition);
+    moveElevator();
+  }
+}
+
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function updateReqsAndDoor() {
+  const indexesToRemove: number[] = [];
+  requests.forEach((request) => {
+    const isReqFromCurrentFloor: boolean =
+      request.direction === elevatorFSM.getState() &&
+      request.callingFloor === currentFloor;
+    const finishedReq: boolean =
+      request.targetFloor === currentFloor && request.handled;
+
+    if (isReqFromCurrentFloor) {
+      request.handled = true;
+      isDoorOpen = true;
+    }
+
+    if (finishedReq) {
+      indexesToRemove.push(requests.indexOf(request));
+      isDoorOpen = true;
+    }
+  });
+  indexesToRemove.reverse().forEach((index) => requests.splice(index, 1));
+}
+
+function checkIfNeedToChangeDirection(): boolean {
+  function isRelevantRequest(request: ElevatorEvent): boolean {
+    const elevatorState = elevatorFSM.getState();
+
+    const isPeekingInCurrentFloor: boolean =
+      request.direction === elevatorFSM.getState() &&
+      request.callingFloor === currentFloor &&
+      !request.handled;
+
+    const isReqInTheSameDirection: boolean =
+      (elevatorFSM.getState() === Direction.MovingDown
+        ? request.targetFloor < currentFloor
+        : request.targetFloor > currentFloor) && request.handled;
+
+    const isReqForPeek: boolean =
+      (elevatorFSM.getState() === Direction.MovingDown
+        ? request.callingFloor < currentFloor
+        : request.callingFloor > currentFloor) && !request.handled;
+    return isReqInTheSameDirection || isReqForPeek || isPeekingInCurrentFloor;
+  }
+  const noReqsForCurrentDirection: boolean = !requests.some((request) =>
+    isRelevantRequest(request)
+  );
+  return noReqsForCurrentDirection;
+}
+
+async function moveElevatorOneFloor() {
+  if (elevatorFSM.getState() === Direction.MovingUp) {
+    await delay(1000);
+    console.log(`Moving up to floor ${currentFloor + 1}`);
+    currentFloor++;
+  } else if (elevatorFSM.getState() === Direction.MovingDown) {
+    await delay(1000);
+    console.log(`Moving down to floor ${currentFloor - 1}`);
+    currentFloor--;
+  }
+}
+
+//TODO: refactor this function to smaller functions
+async function moveElevator() {
+  console.log(`\n    Current floor: ${currentFloor}`);
+  console.table(requests);
+
+  const isNeedToChangDirection = checkIfNeedToChangeDirection();
+  if (isNeedToChangDirection) {
+    elevatorFSM.transition("changeDirection");
+  }
+  console.log(`run updateReqsAndDoor`);
+  updateReqsAndDoor();
+
+  console.table(requests);
+  updateClient();
+
+  // stop if no requests
+  if (requests.length === 0) {
+    elevatorFSM.transition("stop");
+    return;
+  }
+  console.log(`isDoorOpen: ${isDoorOpen}`);
+  isDoorOpen = false;
+  await moveElevatorOneFloor();
+  moveElevator();
+}
+
+function updateClient() {
+  eventEmitter.emit(
+    "updateClient",
+    JSON.stringify({
+      isDoorOpen,
+      currentFloor,
+      elevatorState: elevatorFSM.getState(),
+    })
+  );
+}
 
 export { elevatorFSM, goToFloor };
