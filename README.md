@@ -28,6 +28,38 @@ yarn
 ```
 
 
+## Usage
+
+The `FSM` class is used to create a finite state machine. Here's how to use it:
+
+1. Import the `FSM` class:
+```typescript
+import FSM from './fsm';
+```
+
+2. Create a new instance of FSM, passing the initial state to the constructor:
+```typescript
+const fsm = new FSM('initialState');
+```
+
+3. Define states using the defineState method. You can optionally pass callbacks for when the FSM enters or exits the state:
+```typescript
+fsm.defineState('state1', () => console.log('Entered state1'), () => console.log('Exited state1'));
+fsm.defineState('state2');
+```
+4. Define transitions between states using the defineTransition method. You can optionally pass an action to be performed during the transition:
+```typescript
+fsm.defineTransition('state1', 'state2', 'event1', () => console.log('Performing action...'));
+```
+5. Trigger transitions using the transition method:
+```typescript
+fsm.transition('event1');
+```
+6. Get the current state using the getState method:
+```
+console.log(fsm.getState()); // Outputs: 'state2'
+```
+
 ### Running the Example
 
 The `example` folder contains a backend service and a frontend service that demonstrate the use of the FSM as an elevator with a React app.
