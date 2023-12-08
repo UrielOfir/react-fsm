@@ -10,7 +10,7 @@ interface BuildingProps {
     elevatorCall: (callingFloor: number, targetFloor: number) => void;
   }
 
-const Building: React.FC<BuildingProps> = (props) => {
+const Building: React.FC<BuildingProps> = ({elevatorCall, openDoorAt}) => {
   const [state, setState] = useState<string | null>(null);
   const levelsArray: Level[] = [
     { id: 1, name: "1" },
@@ -19,27 +19,13 @@ const Building: React.FC<BuildingProps> = (props) => {
     { id: 4, name: "4" },
     { id: 5, name: "5" },
   ];
-
   useEffect(() => {
-    props.elevatorCall(2, 5);
+    elevatorCall(2, 5);
   }, []);
-
-  const handleClick = (level: string): void => {
-    fetch("http://localhost:3001/transition", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ transition: `goTo${level}` }),
-    })
-      .then((response: Response) => response.json())
-      .then((data: { state: string }) => setState(data.state))
-      .catch((error: Error) => console.error("Error:", error));
-  };
 
   return (
     <div className="building">
-        <div> hi {props.openDoorAt}</div>
+        <div> hi {openDoorAt}</div>
       {levelsArray.reverse().map((level: Level) => (
         <div key={level.id} className="floor">
           <div className={`door ${state === level.name ? "open" : ""}`}>
@@ -47,7 +33,7 @@ const Building: React.FC<BuildingProps> = (props) => {
             {levelsArray.map((destination: Level) => (
               <button
                 key={destination.id}
-                onClick={() => handleClick(destination.name)}
+                onClick={() => elevatorCall(Number(level.name) , Number(destination.name))}
                 disabled={level.name === destination.name}
               >
                 {state === level.name

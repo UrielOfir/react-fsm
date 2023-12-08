@@ -1,6 +1,5 @@
 import FSM from "../../src/fsm";
-import { EventEmitter } from "events";
-const eventEmitter = new EventEmitter();
+import { eventEmitter } from "./server";
 
 let currentFloor = 0;
 let targetFloor = 0;
@@ -69,7 +68,7 @@ function moveToTargetFloor() {
 }
 
 function arriveAtTargetFloor() {
-  eventEmitter.emit("updateClient", `Arrived at target floor ${targetFloor}`);
+  eventEmitter.emit("updateClient", JSON.stringify({ openDoorAt: currentFloor }));
   elevatorFSM.transition("returnToIdle");
 }
 
@@ -83,10 +82,5 @@ const goToFloor = (call, target) => {
   elevatorFSM.transition("moveToCallingFloor");
 };
 
-function updateClient(ws) {
-  eventEmitter.on("updateClient", (data) => {
-    ws.send(data);
-  });
-}
 
-export { elevatorFSM, goToFloor, updateClient };
+export { elevatorFSM, goToFloor };

@@ -1,8 +1,10 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
+import { EventEmitter } from "events";
 import WebSocket from 'ws';
+export const eventEmitter = new EventEmitter();
 
-import { elevatorFSM, goToFloor, updateClient } from "./elevator";
+import { elevatorFSM, goToFloor } from "./elevator";
 
 
 const app = express();
@@ -16,6 +18,12 @@ app.use(express.json());
 
 const wss = new WebSocket.Server({ port: 8080 });
 
+function updateClient(ws) {
+  eventEmitter.on("updateClient", (data) => {
+    ws.send(data);
+  });
+}
+
 wss.on('connection', ws => {
   ws.on('message', message => {
     console.log('Received:', message);
@@ -25,6 +33,7 @@ wss.on('connection', ws => {
 
 app.post("/goToFloor", (req: Request, res: Response) => {
   const { callingFloor, targetFloor } = req.body;
+  // TODO: go to floor
   goToFloor(callingFloor, targetFloor);
   res.send({ state: elevatorFSM.getState() });
 });
