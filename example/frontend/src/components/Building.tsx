@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Floor from './Floor';
 
 interface Level {
   id: number;
@@ -6,11 +7,13 @@ interface Level {
 }
 
 interface BuildingProps {
-    openDoorAt: number | null;
+    isDoorOpen: boolean;
+    currentFloor: number;
+    elevatorState: string;
     elevatorCall: (callingFloor: number, targetFloor: number) => void;
   }
 
-const Building: React.FC<BuildingProps> = ({elevatorCall, openDoorAt}) => {
+const Building: React.FC<BuildingProps> = ({elevatorCall, elevatorState, isDoorOpen, currentFloor}) => {
   const [state, setState] = useState<string | null>(null);
   const levelsArray: Level[] = [
     { id: 1, name: "1" },
@@ -19,32 +22,24 @@ const Building: React.FC<BuildingProps> = ({elevatorCall, openDoorAt}) => {
     { id: 4, name: "4" },
     { id: 5, name: "5" },
   ];
+
+  const floorsAmount = 5;
   useEffect(() => {
-    // elevatorCall(2, 5);
   }, []);
 
   return (
-    <div className="building">
-        <div> hi {openDoorAt}</div>
-      {levelsArray.reverse().map((level: Level) => (
-        <div key={level.id} className="floor">
-          <div className={`door ${state === level.name ? "open" : ""}`}>
-            {state === level.name ? "Elevator is here" : `Floor ${level.name}`}
-            {levelsArray.map((destination: Level) => (
-              <button
-                key={destination.id}
-                onClick={() => elevatorCall(Number(level.name) , Number(destination.name))}
-                disabled={level.name === destination.name}
-              >
-                {state === level.name
-                  ? "Elevator is here"
-                  : `${destination.name}`}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
+        <div>
+    {Array.from({ length: floorsAmount }, (_, i) => (
+      <Floor
+        key={i}
+        floorsAmount={floorsAmount}
+        floorNumber={i + 1}
+        isDoorOpen={isDoorOpen}
+        currentFloor={currentFloor}
+        elevatorState={elevatorState}
+      />
+    )).reverse()}
+  </div>
   );
 };
 

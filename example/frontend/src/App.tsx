@@ -6,8 +6,9 @@ import Building from "./components/Building";
 const ws = new WebSocket("ws://localhost:8080");
 
 function App() {
-  const [openDoorAt, setOpenDoorAt] = useState(1);
-
+  const [currentFloor, setCurrentFloor] = useState(1);
+  const [elevatorState, setElevatorState] = useState("idle");
+  const [isDoorOpen, setIsDoorOpen] = useState(false);
   useEffect(() => {
     ws.onopen = () => {
       ws.send("Hello from client!");
@@ -17,9 +18,20 @@ function App() {
         const data = JSON.parse(message.data);
         console.log("data", data);
         if (data?.openDoorAt) {
-          setOpenDoorAt(data.openDoorAt);
           console.log("openDoorAt", data.openDoorAt);
         }
+
+        if (data?.currentFloor) {
+          setCurrentFloor(data.currentFloor);
+        }
+
+        if (data?.elevatorState) {
+          setElevatorState(data.elevatorState);
+        }
+        if ('isDoorOpen' in data)  {
+          setIsDoorOpen(data.isDoorOpen);
+        }
+
         return () => {
           ws.close();
         };
@@ -40,7 +52,12 @@ function App() {
 
   return (
     <div>
-      <Building openDoorAt={openDoorAt} elevatorCall={elevatorCall} />
+      <Building
+        elevatorCall={elevatorCall}
+        isDoorOpen={isDoorOpen}
+        currentFloor={currentFloor}
+        elevatorState={elevatorState}
+      />
     </div>
   );
 }
