@@ -140,7 +140,10 @@ async function moveElevator() {
 
   // stop if no requests
   if (requests.length === 0) {
+    await delay(ELEVATOR_DELAY);
     elevatorFSM.transition("stop");
+    isDoorOpen = false;
+    updateClient();
     return;
   }
   console.log(`isDoorOpen: ${isDoorOpen}`);

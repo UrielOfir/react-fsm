@@ -4,15 +4,27 @@ $secondary-color: #0056b3;
 $disabled-color: #ccc;
 $door-color: grey;
 $door-open-color: yellow;
+$elevator-here-color: #ccc;
 $border-color: #ccc;
-$black-color: black;
 $white-color: #fff;
+
+.row-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  border: red solid 1px;
+  > * { // Selects all direct children of the .row-container
+    margin: 5px 5px; // Adds 5px of horizontal margin
+  }
+}
 
 .building {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 50%;
+  max-width: 400px;
   border: 1px solid $border-color;
   border-radius: 5px;
 }
@@ -20,13 +32,12 @@ $white-color: #fff;
 /* floor */
 .floor {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  border: 1px solid $black-color;
-  padding: 20px;
-  margin-bottom: 10px;
-  width: 300px;
-
+  border: 1px solid red;
+  width: 100%;
+  
 }
 
 /* door */
@@ -54,11 +65,17 @@ $white-color: #fff;
 
 .door.elevator-here {
   width: 50px;
-  background-color: $door-open-color;
+  background-color: $elevator-here-color;
 }
 
-button {
-  margin-right: 5px;
+
+// buttons
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  border: red 1px solid;
+  width: 150px;
 }
 
 button {
@@ -70,6 +87,7 @@ button {
   cursor: pointer;
   margin: 5px;
   font-size: 0.8em;
+  flex: 0 0 20%; // This will make the button take up 30% of the container width
 }
 
 button:disabled {
@@ -78,4 +96,26 @@ button:disabled {
 
 button:hover:not(:disabled) {
   background-color: $secondary-color;
+}
+
+// sign
+.elevator-state {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+}
+
+.elevator-state.movingUp {
+  background-color: green;
+}
+
+.elevator-state.movingDown {
+  background-color: red;
+}
+
+.elevator-state.idle {
+  background-color: gray;
 }
