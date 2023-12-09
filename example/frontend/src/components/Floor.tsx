@@ -1,7 +1,6 @@
 import React from "react";
 import Door from "./Door";
 import Buttons from "./Buttons";
-import Sign from "./Sign";
 
 interface FloorProps {
   floorsAmount: number;
@@ -23,13 +22,9 @@ const Floor: React.FC<FloorProps> = ({
   return (
     <div className="floor">
       <div className="row-container">
-        <Sign
+        <Door
           currentFloor={currentFloor}
           elevatorState={elevatorState}
-        />
-      </div>{" "}
-      <div className="row-container">
-        <Door
           isDoorOpen={isDoorOpen}
           elevatorHere={floorNumber === currentFloor}
         />

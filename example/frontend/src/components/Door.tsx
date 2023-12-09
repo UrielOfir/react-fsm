@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import './Door.scss'
+import Sign from "./Sign";
 
 interface DoorProps {
   isDoorOpen: boolean;
   elevatorHere: boolean;
+  currentFloor: number;
+  elevatorState: string;
 }
 
-const Door: React.FC<DoorProps> = ({ isDoorOpen, elevatorHere }) => {
+const Door: React.FC<DoorProps> = ({ isDoorOpen, elevatorHere , elevatorState, currentFloor}) => {
   const [doorClass, setDoorClass] = useState("door");
 
   useEffect(() => {
@@ -20,8 +23,15 @@ const Door: React.FC<DoorProps> = ({ isDoorOpen, elevatorHere }) => {
   }, [isDoorOpen, elevatorHere]);
 
   return (
-    // <div className="door elevator-here">
+<div>
+<div className="row-container">
+        <Sign
+          currentFloor={currentFloor}
+          elevatorState={elevatorState}
+        />
+      </div>
     <div className={doorClass}>
+    </div>
     </div>
   );
 };

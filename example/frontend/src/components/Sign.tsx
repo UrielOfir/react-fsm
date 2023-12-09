@@ -1,17 +1,18 @@
-import React from 'react';
+import React from "react";
+import "./Sign.scss";
 
 interface SignProps {
   currentFloor: number;
   elevatorState: string;
 }
 
-const Sign: React.FC<SignProps> = ({ currentFloor, elevatorState}) => {
+const Sign: React.FC<SignProps> = ({ currentFloor, elevatorState }) => {
   return (
-    <div className='row-container'>
-      {`Current Floor: ${currentFloor}`}
+    <div className="row-container">
+      <div className={`elevator-state`}>{currentFloor}</div>
       <div className={`elevator-state ${elevatorState}`}>
-        {elevatorState === 'movingUp' && '↑'}
-        {elevatorState === 'movingDown' && '↓'}
+        {elevatorState === "movingUp" && "↑"}
+        {elevatorState === "movingDown" && "↓"}
       </div>
     </div>
   );

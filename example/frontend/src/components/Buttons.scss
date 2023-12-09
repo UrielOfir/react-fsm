@@ -1,0 +1,26 @@
+@import "../App.scss";
+
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  // border: red 1px solid;
+  width: 150px;
+}
+
+button {
+  padding: 5px 10px;
+  background-color: $primary-color;
+  color: $white-color;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 5px;
+  font-size: 0.8em;
+  flex: 0 0 20%; // This will make the button take up 30% of the container width
+
+  &:disabled {
+    background-color: $disabled-color;
+    cursor: not-allowed;
+  }
+}

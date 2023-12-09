@@ -2,10 +2,6 @@
 $primary-color: #007bff;
 $secondary-color: #0056b3;
 $disabled-color: #ccc;
-// $door-color: grey;
-// $door-open-color: yellow;
-// $elevator-here-color: #ccc;
-// $elevator-width: 75px;
 $border-color: #ccc;
 $white-color: #fff;
 
@@ -14,7 +10,7 @@ $white-color: #fff;
   justify-content: center;
   align-items: center;
   width: 100%;
-  border: red solid 1px;
+  // border: red solid 1px;
   > * {
     // Selects all direct children of the .row-container
     margin: 5px 5px; // Adds 5px of horizontal margin
@@ -37,100 +33,6 @@ $white-color: #fff;
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  border: 1px solid red;
-  width: 100%;
-}
-
-/* door */
-// @keyframes doorOpen {
-//   0% {
-//     width: $elevator-width;
-//     background-color: $door-color;
-//   }
-//   100% {
-//     width: 0;
-//     background-color: $door-open-color;
-//   }
-// }
-
-// .door {
-//   width: $elevator-width;
-//   height: 100px;
-//   background-color: $door-color;
-//   transition: background-color 0.5s ease;
-//   position: relative;
-
-//   &::after {
-//     content: "";
-//     position: absolute;
-//     top: 0;
-//     bottom: 0;
-//     left: 50%;
-//     border-left: 1px solid black;
-//     transition: border 0.5s ease; // Add transition for the border
-//   }
-// }
-
-// .door.open {
-//   background-color: $door-open-color; // Change the color when the door is open
-
-//   &::after {
-//     border-left: 1px solid transparent; // Hide the black line when the door is open
-//   }
-// }
-
-// .door.elevator-here {
-//   width: $elevator-width;
-//   background-color: $elevator-here-color;
-// }
-
-// buttons
-.button-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  border: red 1px solid;
-  width: 150px;
-}
-
-button {
-  padding: 5px 10px;
-  background-color: $primary-color;
-  color: $white-color;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin: 5px;
-  font-size: 0.8em;
-  flex: 0 0 20%; // This will make the button take up 30% of the container width
-}
-
-button:disabled {
-  background-color: $disabled-color;
-}
-
-button:hover:not(:disabled) {
-  background-color: $secondary-color;
-}
-
-// sign
-.elevator-state {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border: 1px solid black;
-}
-
-.elevator-state.movingUp {
-  background-color: green;
-}
-
-.elevator-state.movingDown {
-  background-color: red;
-}
-
-.elevator-state.idle {
-  background-color: gray;
+  width: 100%;
 }
