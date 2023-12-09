@@ -1,5 +1,7 @@
+const WEBSOCKET_API_URL =  "ws://localhost:8080";//  for ubuntu docker: 'ws://172.17.0.1:8080'
+
 export const initializeWebSocket = (onMessage: (data: any) => void) => {
-    const ws = new WebSocket("ws://localhost:8080");
+    const ws = new WebSocket(WEBSOCKET_API_URL);
   
     ws.onopen = () => {
       ws.send("Hello from client!");
