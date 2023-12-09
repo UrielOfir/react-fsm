@@ -8,7 +8,7 @@ interface ButtonsProps {
 
 const Buttons: React.FC<ButtonsProps> = ({ floorsAmount, floorNumber, elevatorCall }) => {
   return (
-    <div>
+    <div className='building'>
       {Array.from({ length: floorsAmount }, (_, i) => (
         <button 
           key={i} 

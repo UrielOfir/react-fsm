@@ -1,10 +1,19 @@
+// Define your color scheme
+$primary-color: #007bff;
+$secondary-color: #0056b3;
+$disabled-color: #ccc;
+$door-color: grey;
+$door-open-color: yellow;
+$border-color: #ccc;
+$black-color: black;
+$white-color: #fff;
+
 .building {
   display: flex;
   flex-direction: column-reverse;
   align-items: center;
-  width: 200px;
-  margin: auto;
-  border: 1px solid #ccc;
+  width: 50%;
+  border: 1px solid $border-color;
   border-radius: 5px;
 }
 
@@ -13,27 +22,29 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid black;
+  border: 1px solid $black-color;
   padding: 20px;
   margin-bottom: 10px;
+  width: 300px;
+
 }
 
 /* door */
 @keyframes doorOpen {
   0% {
     width: 50px;
-    background-color: grey;
+    background-color: $door-color;
   }
   100% {
     width: 0;
-    background-color: yellow;
+    background-color: $door-open-color;
   }
 }
 
 .door {
   width: 50px;
   height: 100px;
-  background-color: grey;
+  background-color: $door-color;
   transition: background-color 0.5s ease;
 }
 
@@ -42,8 +53,8 @@
 }
 
 .door.elevator-here {
-  width: 0;
-  background-color: yellow;
+  width: 50px;
+  background-color: $door-open-color;
 }
 
 button {
@@ -52,8 +63,8 @@ button {
 
 button {
   padding: 5px 10px;
-  background-color: #007bff;
-  color: #fff;
+  background-color: $primary-color;
+  color: $white-color;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -62,9 +73,9 @@ button {
 }
 
 button:disabled {
-  background-color: #ccc;
+  background-color: $disabled-color;
 }
 
 button:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: $secondary-color;
 }

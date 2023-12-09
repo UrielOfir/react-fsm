@@ -28,7 +28,7 @@ const Building: React.FC<BuildingProps> = ({elevatorCall, elevatorState, isDoorO
   }, []);
 
   return (
-        <div>
+        <div className="building">
     {Array.from({ length: floorsAmount }, (_, i) => (
       <Floor
         key={i}
