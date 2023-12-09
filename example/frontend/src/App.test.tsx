@@ -2,8 +2,18 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+
+jest.mock('./services/apiServices', () => ({
+  elevatorCall: jest.fn(),
+}));
+
+jest.mock('./services/webSocketService', () => ({
+  initializeWebSocket: jest.fn().mockImplementation((onMessage) => {
+    onMessage({ floor: 5 });
+    return { close: jest.fn() };
+  }),
+}));
+
+test('renders without crashing', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
 });

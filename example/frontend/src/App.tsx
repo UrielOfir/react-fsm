@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "./App.scss";
-import axios from "axios";
 import Building from "./components/Building";
-
-const ws = new WebSocket("ws://localhost:8080");
+import { elevatorCall } from "./services/apiServices";
+import { initializeWebSocket } from "./services/webSocketService";
 
 function App() {
   const [currentFloor, setCurrentFloor] = useState(1);
   const [elevatorState, setElevatorState] = useState("idle");
   const [isDoorOpen, setIsDoorOpen] = useState(false);
+
   useEffect(() => {
-    ws.onopen = () => {
-      ws.send("Hello from client!");
-    };
-    ws.onmessage = (message) => {
+    const ws = initializeWebSocket((data) => {
       try {
-        const data = JSON.parse(message.data);
         console.log("data", data);
         if (data?.openDoorAt) {
           console.log("openDoorAt", data.openDoorAt);
@@ -28,7 +24,7 @@ function App() {
         if (data?.elevatorState) {
           setElevatorState(data.elevatorState);
         }
-        if ('isDoorOpen' in data)  {
+        if ("isDoorOpen" in data) {
           setIsDoorOpen(data.isDoorOpen);
         }
 
@@ -38,17 +34,12 @@ function App() {
       } catch (error) {
         console.error("Error:", error);
       }
+    });
+
+    return () => {
+      ws.close();
     };
   }, []);
-
-  const elevatorCall = (callingFloor: number, targetFloor: number) => {
-    axios
-      .post("http://localhost:3001/goToFloor", {
-        callingFloor,
-        targetFloor,
-      })
-      .catch((error) => console.error("Error:", error));
-  };
 
   return (
     <div>
