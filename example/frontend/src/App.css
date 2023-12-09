@@ -8,6 +8,7 @@
   border-radius: 5px;
 }
 
+/* floor */
 .floor {
   display: flex;
   justify-content: space-between;
@@ -17,32 +18,36 @@
   margin-bottom: 10px;
 }
 
+/* door */
+@keyframes doorOpen {
+  0% {
+    width: 50px;
+    background-color: grey;
+  }
+  100% {
+    width: 0;
+    background-color: yellow;
+  }
+}
+
+.door {
+  width: 50px;
+  height: 100px;
+  background-color: grey;
+  transition: background-color 0.5s ease;
+}
+
 .door.open {
-  background-color: green;
+  animation: doorOpen 5s forwards;
 }
 
 .door.elevator-here {
+  width: 0;
   background-color: yellow;
 }
 
 button {
   margin-right: 5px;
-}
-
-.door {
-  width: 100px;
-  height: 100px;
-  background-color: #ccc;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 0.8em;
-}
-
-.door.open {
-  background-color: #fff;
 }
 
 button {

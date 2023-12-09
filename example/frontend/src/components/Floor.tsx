@@ -9,13 +9,14 @@ interface FloorProps {
   isDoorOpen: boolean;
   currentFloor: number;
   elevatorState: string;
+  elevatorCall: (callingFloor: number, targetFloor: number) => void;
 }
 
-const Floor: React.FC<FloorProps> = ({ floorsAmount, floorNumber, isDoorOpen, currentFloor, elevatorState }) => {
+const Floor: React.FC<FloorProps> = ({ floorsAmount, floorNumber, isDoorOpen, currentFloor, elevatorState , elevatorCall}) => {
   return (
     <div className='floor'>
       <Door isDoorOpen={isDoorOpen } elevatorHere={floorNumber===currentFloor} />
-      <Buttons floorsAmount={floorsAmount} floorNumber={floorNumber} />
+      <Buttons floorsAmount={floorsAmount} floorNumber={floorNumber} elevatorCall={elevatorCall}/>
       <Sign currentFloor={currentFloor} elevatorState={elevatorState} isDoorOpen={isDoorOpen}/>
     </div>
   );

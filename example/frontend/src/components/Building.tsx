@@ -37,6 +37,7 @@ const Building: React.FC<BuildingProps> = ({elevatorCall, elevatorState, isDoorO
         isDoorOpen={isDoorOpen}
         currentFloor={currentFloor}
         elevatorState={elevatorState}
+        elevatorCall={elevatorCall}
       />
     )).reverse()}
   </div>

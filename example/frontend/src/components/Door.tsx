@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface DoorProps {
   isDoorOpen: boolean;
@@ -6,16 +6,22 @@ interface DoorProps {
 }
 
 const Door: React.FC<DoorProps> = ({ isDoorOpen, elevatorHere }) => {
-  let doorClass = 'door';
-  if (isDoorOpen && elevatorHere) {
-    doorClass += ' open';
-  } else if (!isDoorOpen && elevatorHere) {
-    doorClass += ' elevator-here';
-  }
+  const [doorClass, setDoorClass] = useState('door');
+
+  useEffect(() => {
+    let newDoorClass = 'door';
+    if (isDoorOpen && elevatorHere) {
+      setDoorClass(doorClass + 'open');
+    } else if (!isDoorOpen && elevatorHere) {
+      newDoorClass += ' elevator-here';
+    }
+    setDoorClass(newDoorClass);
+  }, [isDoorOpen, elevatorHere]);
 
   return (
-    <div className={`${doorClass}`}>
-      {isDoorOpen ? "The door is open" : "The door is closed"}
+    <div className={doorClass}>
+      {`EH: ${elevatorHere} DO: ${isDoorOpen}
+      class: ${doorClass}`}
     </div>
   );
 };
