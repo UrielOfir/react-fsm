@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import './Door.scss'
 
 interface DoorProps {
   isDoorOpen: boolean;
@@ -21,8 +22,6 @@ const Door: React.FC<DoorProps> = ({ isDoorOpen, elevatorHere }) => {
   return (
     // <div className="door elevator-here">
     <div className={doorClass}>
-      {`EH: ${elevatorHere} DO: ${isDoorOpen}
-      class: ${doorClass}`}
     </div>
   );
 };
