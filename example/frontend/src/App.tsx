@@ -3,10 +3,11 @@ import "./App.scss";
 import Building from "./components/Building";
 import { elevatorCall } from "./services/apiServices";
 import { initializeWebSocket } from "./services/webSocketService";
+import { ElevatorState } from "./sharedTypes/types";
 
 function App() {
   const [currentFloor, setCurrentFloor] = useState(1);
-  const [elevatorState, setElevatorState] = useState("idle");
+  const [elevatorState, setElevatorState] = useState(ElevatorState.Idle);
   const [isDoorOpen, setIsDoorOpen] = useState(false);
 
   useEffect(() => {

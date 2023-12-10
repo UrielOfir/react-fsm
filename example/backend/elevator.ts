@@ -1,6 +1,6 @@
 import FSM from "../../src/fsm";
 import { eventEmitter } from "./server";
-import { ElevatorEvent, ElevatorState } from "../sharedTypes/types";
+import { ElevatorEvent, ElevatorState } from "../frontend/src/sharedTypes/types";
 import { Transition  } from "./types";
 const elevatorFSM = new FSM(ElevatorState.Idle);
 
