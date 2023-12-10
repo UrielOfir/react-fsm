@@ -1,19 +1,8 @@
 import FSM from "../../src/fsm";
 import { eventEmitter } from "./server";
+import { Direction, ElevatorEvent } from "../sharedTypes/types";
 
 const elevatorFSM = new FSM("idle");
-
-enum Direction {
-  MovingUp = "movingUp",
-  MovingDown = "movingDown",
-}
-
-type ElevatorEvent = {
-  callingFloor: number;
-  targetFloor: number;
-  direction: Direction;
-  handled: boolean;
-};
 
 elevatorFSM.defineState("idle");
 elevatorFSM.defineState("movingUp");
