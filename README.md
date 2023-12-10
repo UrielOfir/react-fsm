@@ -77,6 +77,9 @@ yarn start
 cd ../frontend yarn
 ```
 
+## Project Roadmap
+
+For more details on the future plans for this project, check out the [Project Roadmap](./ROADMAP.md).
 
 The backend service runs on port 3001 as REST API and on port 8080 as web-socket.
 The frontend service runs on port 3000.
