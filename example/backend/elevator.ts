@@ -34,7 +34,7 @@ elevatorFSM.defineTransition(
 elevatorFSM.defineTransition(Direction.MovingUp, "idle", "stop");
 elevatorFSM.defineTransition(Direction.MovingDown, "idle", "stop");
 
-const requests: ElevatorEvent[] = [];
+const elevatorEvents: ElevatorEvent[] = [];
 let currentFloor = 0;
 let isDoorOpen = false;
 
@@ -47,7 +47,7 @@ function goToFloor(callingFloor: number, targetFloor: number) {
     handled: false,
   };
 
-  requests.push(request);
+  elevatorEvents.push(request);
 
   if (elevatorFSM.getState() === "idle") {
     const transition =
@@ -63,7 +63,7 @@ function delay(ms: number) {
 
 function updateReqsAndDoor() {
   const indexesToRemove: number[] = [];
-  requests.forEach((request) => {
+  elevatorEvents.forEach((request) => {
     const isReqFromCurrentFloor: boolean =
       request.direction === elevatorFSM.getState() &&
       request.callingFloor === currentFloor;
@@ -76,11 +76,11 @@ function updateReqsAndDoor() {
     }
 
     if (finishedReq) {
-      indexesToRemove.push(requests.indexOf(request));
+      indexesToRemove.push(elevatorEvents.indexOf(request));
       isDoorOpen = true;
     }
   });
-  indexesToRemove.reverse().forEach((index) => requests.splice(index, 1));
+  indexesToRemove.reverse().forEach((index) => elevatorEvents.splice(index, 1));
 }
 
 function checkIfNeedToChangeDirection(): boolean {
@@ -103,7 +103,7 @@ function checkIfNeedToChangeDirection(): boolean {
         : request.callingFloor > currentFloor) && !request.handled;
     return isReqInTheSameDirection || isReqForPeek || isPeekingInCurrentFloor;
   }
-  const noReqsForCurrentDirection: boolean = !requests.some((request) =>
+  const noReqsForCurrentDirection: boolean = !elevatorEvents.some((request) =>
     isRelevantRequest(request)
   );
   return noReqsForCurrentDirection;
@@ -126,7 +126,7 @@ async function moveElevatorOneFloor() {
 //TODO: refactor this function to smaller functions
 async function moveElevator() {
   console.log(`\n    Current floor: ${currentFloor}`);
-  console.table(requests);
+  console.table(elevatorEvents);
 
   const isNeedToChangDirection = checkIfNeedToChangeDirection();
   if (isNeedToChangDirection) {
@@ -135,11 +135,11 @@ async function moveElevator() {
   console.log(`run updateReqsAndDoor`);
   updateReqsAndDoor();
 
-  console.table(requests);
+  console.table(elevatorEvents);
   updateClient();
 
   // stop if no requests
-  if (requests.length === 0) {
+  if (elevatorEvents.length === 0) {
     await delay(ELEVATOR_DELAY);
     elevatorFSM.transition("stop");
     isDoorOpen = false;
