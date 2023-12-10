@@ -1,11 +1,12 @@
 export type ElevatorEvent = {
   callingFloor: number;
   targetFloor: number;
-  direction: Direction;
+  direction: ElevatorState.MovingDown | ElevatorState.MovingUp;
   handled: boolean;
 };
 
-export enum Direction {
-  MovingUp = "movingUp",
-  MovingDown = "movingDown",
+export enum ElevatorState {
+    Idle = "idle",
+    MovingUp = "movingUp",
+    MovingDown = "movingDown"
 }
