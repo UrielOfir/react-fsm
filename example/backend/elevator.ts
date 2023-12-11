@@ -108,7 +108,7 @@ function checkIfNeedToChangeDirection(): boolean {
   return noReqsForCurrentDirection;
 }
 
-const ELEVATOR_DELAY = 5000;
+const ELEVATOR_DELAY = 2000;
 
 async function moveElevatorOneFloor() {
   if (elevatorFSM.getState() === ElevatorState.MovingUp) {
