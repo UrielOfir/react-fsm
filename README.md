@@ -62,6 +62,7 @@ console.log(fsm.getState()); // Outputs: 'state2'
 
 ### Running the Example
 
+(ctrl+click the picture to see the example on YouTube)
 [![Watch the video](https://img.youtube.com/vi/0Xcl6EoLPvw/maxresdefault.jpg)](https://youtu.be/0Xcl6EoLPvw)
 
 The `example` folder contains a backend service and a frontend service that demonstrate the use of the FSM as an elevator with a React app.
