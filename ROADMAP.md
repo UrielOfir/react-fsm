@@ -4,7 +4,8 @@ This document outlines the planned future enhancements for the React Finite Stat
 
 ## Future Enhancements
 
-1. **Add Tests**: Implement unit and integration tests to ensure the reliability and stability of the code.
+1. **Add Tests**: Implement unit, integration, and Playwright tests to ensure the reliability and stability of the code.
+
 
 2. **Upload to npm**: Package the project as a reusable npm module, allowing it to be easily integrated into other projects.
 
@@ -16,7 +17,8 @@ This document outlines the planned future enhancements for the React Finite Stat
 
 ## Tasks
 
-- [ ] Write tests for the FSM.
+- [ ] Write unit and integration tests for the FSM.
+- [ ] Write Playwright tests for the FSM.
 - [ ] Set up the project for publishing to npm.
 - [ ] Create a Dockerfile and push the image to Docker Hub.
 - [ ] Set up a CI/CD pipeline.
