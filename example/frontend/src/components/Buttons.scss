@@ -17,7 +17,7 @@ button {
   cursor: pointer;
   margin: 5px;
   font-size: 0.8em;
-  flex: 0 0 20%; // This will make the button take up 30% of the container width
+  flex: 0 0 20%; 
 
   &:disabled {
     background-color: $disabled-color;

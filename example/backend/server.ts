@@ -33,7 +33,6 @@ wss.on('connection', ws => {
 
 app.post("/goToFloor", (req: Request, res: Response) => {
   const { callingFloor, targetFloor } = req.body;
-  // TODO: go to floor
   goToFloor(callingFloor, targetFloor);
   res.send({ state: elevatorFSM.getState() });
 });

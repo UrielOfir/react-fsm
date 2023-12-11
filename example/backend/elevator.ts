@@ -4,6 +4,8 @@ import { ElevatorEvent, ElevatorState } from "../frontend/src/sharedTypes/types"
 import { Transition  } from "./types";
 const elevatorFSM = new FSM(ElevatorState.Idle);
 
+const ELEVATOR_DELAY = 2000;
+
 elevatorFSM.defineState(ElevatorState.Idle);
 elevatorFSM.defineState(ElevatorState.MovingUp);
 elevatorFSM.defineState(ElevatorState.MovingDown);
@@ -108,7 +110,6 @@ function checkIfNeedToChangeDirection(): boolean {
   return noReqsForCurrentDirection;
 }
 
-const ELEVATOR_DELAY = 2000;
 
 async function moveElevatorOneFloor() {
   if (elevatorFSM.getState() === ElevatorState.MovingUp) {

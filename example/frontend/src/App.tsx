@@ -13,16 +13,11 @@ function App() {
   useEffect(() => {
     const ws = initializeWebSocket((data) => {
       try {
-        console.log("data", data);
-        if (data?.openDoorAt) {
-          console.log("openDoorAt", data.openDoorAt);
-        }
-
-        if (data?.currentFloor) {
+        if ("currentFloor" in data) {
           setCurrentFloor(data.currentFloor);
         }
 
-        if (data?.elevatorState) {
+        if ("elevatorState" in data) {
           setElevatorState(data.elevatorState);
         }
         if ("isDoorOpen" in data) {
