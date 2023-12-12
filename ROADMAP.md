@@ -17,6 +17,7 @@ This document outlines the planned future enhancements for the React Finite Stat
 
 ## Tasks
 
+- [ ] Add environment variables.
 - [ ] Write unit and integration tests for the FSM.
 - [ ] Write Playwright tests for the FSM.
 - [ ] Set up the project for publishing to npm.
