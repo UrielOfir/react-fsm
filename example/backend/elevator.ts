@@ -1,7 +1,11 @@
 import FSM from "../../src/fsm";
+import { checkIfEventAndElevatorSameDirection, delay } from "./utils";
 import { eventEmitter } from "./server";
-import { ElevatorEvent, ElevatorState } from "../frontend/src/sharedTypes/types";
-import { Transition  } from "./types";
+import {
+  ElevatorEvent,
+  ElevatorState,
+} from "../frontend/src/sharedTypes/types";
+import { Transition } from "./types";
 const elevatorFSM = new FSM(ElevatorState.Idle);
 
 const ELEVATOR_DELAY = 2000;
@@ -30,8 +34,16 @@ elevatorFSM.defineTransition(
   ElevatorState.MovingUp,
   Transition.ChangeDirection
 );
-elevatorFSM.defineTransition(ElevatorState.MovingUp, ElevatorState.Idle, Transition.Stop);
-elevatorFSM.defineTransition(ElevatorState.MovingDown, ElevatorState.Idle, Transition.Stop);
+elevatorFSM.defineTransition(
+  ElevatorState.MovingUp,
+  ElevatorState.Idle,
+  Transition.Stop
+);
+elevatorFSM.defineTransition(
+  ElevatorState.MovingDown,
+  ElevatorState.Idle,
+  Transition.Stop
+);
 
 const elevatorEvents: ElevatorEvent[] = [];
 let currentFloor = 0;
@@ -50,58 +62,60 @@ function goToFloor(callingFloor: number, targetFloor: number) {
 
   elevatorEvents.push(event);
 
-  if (elevatorFSM.getState() === ElevatorState.Idle) {
+  const isElevatorIdle: boolean = elevatorFSM.getState() === ElevatorState.Idle;
+  if (isElevatorIdle) {
     const transition =
-      event.callingFloor >= currentFloor ? Transition.MoveUp : Transition.MoveDown;
+      event.callingFloor >= currentFloor
+        ? Transition.MoveUp
+        : Transition.MoveDown;
     elevatorFSM.transition(transition);
     moveElevator();
   }
 }
 
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 function updateReqsAndDoor() {
   const indexesToRemove: number[] = [];
-  elevatorEvents.forEach((request) => {
+  elevatorEvents.forEach((event) => {
+    //conditions
+    const isElevatorAtCallingFloor: boolean =
+      event.callingFloor === currentFloor;
+    const isElevatorAtTargetFloor: boolean = event.targetFloor === currentFloor;
     const isReqFromCurrentFloor: boolean =
-      request.direction === elevatorFSM.getState() &&
-      request.callingFloor === currentFloor;
-    const finishedReq: boolean =
-      request.targetFloor === currentFloor && request.handled;
+      checkIfEventAndElevatorSameDirection(event, elevatorFSM) &&
+      isElevatorAtCallingFloor;
+    const finishedReq: boolean = isElevatorAtTargetFloor && event.handled;
 
     if (isReqFromCurrentFloor) {
-      request.handled = true;
+      event.handled = true;
       isDoorOpen = true;
     }
 
     if (finishedReq) {
-      indexesToRemove.push(elevatorEvents.indexOf(request));
+      indexesToRemove.push(elevatorEvents.indexOf(event));
       isDoorOpen = true;
     }
   });
+
+  // remove finished requests
   indexesToRemove.reverse().forEach((index) => elevatorEvents.splice(index, 1));
 }
 
 function checkIfNeedToChangeDirection(): boolean {
-  function isRelevantRequest(request: ElevatorEvent): boolean {
-    const elevatorState = elevatorFSM.getState();
-
+  function isRelevantRequest(event: ElevatorEvent): boolean {
     const isPeekingInCurrentFloor: boolean =
-      request.direction === elevatorFSM.getState() &&
-      request.callingFloor === currentFloor &&
-      !request.handled;
+      checkIfEventAndElevatorSameDirection(event, elevatorFSM) &&
+      event.callingFloor === currentFloor &&
+      !event.handled;
 
     const isReqInTheSameDirection: boolean =
       (elevatorFSM.getState() === ElevatorState.MovingDown
-        ? request.targetFloor < currentFloor
-        : request.targetFloor > currentFloor) && request.handled;
+        ? event.targetFloor < currentFloor
+        : event.targetFloor > currentFloor) && event.handled;
 
     const isReqForPeek: boolean =
       (elevatorFSM.getState() === ElevatorState.MovingDown
-        ? request.callingFloor < currentFloor
-        : request.callingFloor > currentFloor) && !request.handled;
+        ? event.callingFloor < currentFloor
+        : event.callingFloor > currentFloor) && !event.handled;
     return isReqInTheSameDirection || isReqForPeek || isPeekingInCurrentFloor;
   }
   const noReqsForCurrentDirection: boolean = !elevatorEvents.some((request) =>
@@ -109,7 +123,6 @@ function checkIfNeedToChangeDirection(): boolean {
   );
   return noReqsForCurrentDirection;
 }
-
 
 async function moveElevatorOneFloor() {
   if (elevatorFSM.getState() === ElevatorState.MovingUp) {
